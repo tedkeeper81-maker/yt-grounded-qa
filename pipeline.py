@@ -1,4 +1,4 @@
-"""yt-grounded-qa 최소 파이프라인 (설계서 v1.1 구현, 외부 호출 없음)."""
+"""yt-grounded-qa 최소 파이프라인 (설계서 v1.2 구현, 외부 호출 없음)."""
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
@@ -18,6 +18,7 @@ class Candidate:
     has_numbers_source: bool
     claim: str
     t: tuple[int, int]
+    conflict: bool = False
 
 
 def structure(question: str) -> dict:
@@ -56,7 +57,8 @@ def score(c: Candidate, cross: bool) -> tuple[int, str]:
     s += 20 if cross else 0
     s += 10 if c.has_numbers_source else 0
     s += 10 if c.subtitles == "manual" else 5
-    return s, ""
+    s -= 15 if c.conflict else 0
+    return max(0, s), "이해충돌 -15" if c.conflict else ""
 
 
 def run_case(question: str, cands: list[Candidate]) -> dict:

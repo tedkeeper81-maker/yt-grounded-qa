@@ -65,6 +65,14 @@ def extract_relations(claim: str, ev: dict) -> list[dict]:
     if re.search(r"안 |못 |곰팡이|더위|답답", claim) and re.search(r"환기", claim):
         rels.append({"from": "환기 부족", "type": "원인", "to": "곰팡이·더위",
                      "evidence": ev})
+    # 경유: "X을/를 통해(서) Y" → X --방법--> Y
+    if "통해" in claim:
+        head, _, tail = claim.partition("통해")
+        mx = re.search(r"([가-힣]+)(?:을|를)\s*$", head)
+        nouns = split_nouns(tail)
+        if mx and nouns:
+            rels.append({"from": norm(mx.group(1)), "type": "방법",
+                         "to": nouns[0], "evidence": ev})
     return rels
 
 

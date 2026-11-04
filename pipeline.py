@@ -52,7 +52,7 @@ def score(c: Candidate, cross: bool) -> tuple[int, str]:
     if c.subtitles == "none" or not c.date or c.channel_type == "promo" or not c.timestamp_ok:
         return 0, "필수 탈락"
     s = 0
-    s += 40 if c.channel_type == "official" else 10
+    s += 20  # v1.3: 채널 구분 폐지, 일괄 20점
     s += _recency_score(c.date)
     s += 20 if cross else 0
     s += 10 if c.has_numbers_source else 0
